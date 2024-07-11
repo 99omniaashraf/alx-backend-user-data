@@ -9,6 +9,7 @@ from flask import request
 # Define a TypeVar for 'User'
 User = TypeVar('User')
 
+
 class Auth():
     """Template for all authentication system implemented in this app.
     """
