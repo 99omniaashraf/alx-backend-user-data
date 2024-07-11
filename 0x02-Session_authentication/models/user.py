@@ -1,14 +1,17 @@
-# models/user.py
+#!/usr/bin/env python3
+""" User module
+"""
 import hashlib
-from datetime import datetime
 from models.base import Base
 
 
 class User(Base):
-    """ User class """
+    """ User class
+    """
 
     def __init__(self, *args: list, **kwargs: dict):
-        """ Initialize a User instance """
+        """ Initialize a User instance
+        """
         super().__init__(*args, **kwargs)
         self.email = kwargs.get('email')
         self._password = kwargs.get('_password')
@@ -17,19 +20,22 @@ class User(Base):
 
     @property
     def password(self) -> str:
-        """ Getter of the password """
+        """ Getter of the password
+        """
         return self._password
 
     @password.setter
     def password(self, pwd: str):
-        """ Setter of a new password: encrypt in SHA256 """
+        """ Setter of a new password: encrypt in SHA256
+        """
         if pwd is None or type(pwd) is not str:
             self._password = None
         else:
             self._password = hashlib.sha256(pwd.encode()).hexdigest().lower()
 
     def is_valid_password(self, pwd: str) -> bool:
-        """ Validate a password """
+        """ Validate a password
+        """
         if pwd is None or type(pwd) is not str:
             return False
         if self.password is None:
@@ -38,7 +44,8 @@ class User(Base):
         return hashlib.sha256(pwd_e).hexdigest().lower() == self.password
 
     def display_name(self) -> str:
-        """ Display User name based on email/first_name/last_name """
+        """ Display User name based on email/first_name/last_name
+        """
         if self.email is None and self.first_name is None \
                 and self.last_name is None:
             return ""
@@ -50,33 +57,3 @@ class User(Base):
             return "{}".format(self.last_name)
         else:
             return "{} {}".format(self.first_name, self.last_name)
-
-    @staticmethod
-    def all():
-        """ Return all User instances """
-        return User.instances()
-
-    @staticmethod
-    def get(id: str):
-        """ Get a User instance by id """
-        return User.find(id)
-
-    def save(self):
-        """ Save the User instance """
-        self.updated_at = datetime.utcnow()
-        return self.save_instance()
-
-    def remove(self):
-        """ Remove the User instance """
-        return self.destroy()
-
-    def to_json(self):
-        """ Convert User instance to JSON """
-        return {
-            "id": self.id,
-            "email": self.email,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "updated_at": self.updated_at.strftime("%Y-%m-%d %H:%M:%S")
-        }
